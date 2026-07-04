@@ -7,11 +7,13 @@ import { GithubUser, ReposResponse, ActivityPoint } from '../../shared/models/gi
 import { SearchComponent } from '../search/search.component';
 import { ProfileCardComponent } from '../profile/profile-card.component';
 import { ReposListComponent } from '../repos/repos-list.component';
+import { LanguageChartComponent } from '../charts/language-chart.component';
+import { ActivityChartComponent } from '../charts/activity-chart.component';
 
 @Component({
   selector: 'app-analyzer',
   standalone: true,
-  imports: [SearchComponent, ProfileCardComponent, ReposListComponent],
+  imports: [SearchComponent, ProfileCardComponent, ReposListComponent, LanguageChartComponent, ActivityChartComponent],
   template: `
     <app-search (search)="onSearch($event)" />
 
@@ -26,10 +28,12 @@ import { ReposListComponent } from '../repos/repos-list.component';
     @if (hasResults()) {
       <div class="results-grid">
         <app-profile-card [user]="profile()!" />
-        <app-repos-list [reposData]="repos()!" />
-        <!-- <app-language-chart /> -->
-        <!-- <app-activity-chart /> -->
-        <!-- <app-commit-frequency-chart /> -->
+        <div class="right-column">
+          <app-repos-list [reposData]="repos()!" />
+          <app-language-chart [languages]="repos()!.languages" [valueLabel]="'repos'" />
+          <app-activity-chart [activity]="activity()" />
+          <!-- <app-commit-frequency-chart /> -->
+        </div>
       </div>
     }
   `,

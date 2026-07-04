@@ -10,7 +10,8 @@ import {
   RepoDetail,
   RepoHealth,
   CommitFrequencyPoint,
-  ContributorSummary
+  ContributorSummary,
+  RepoLanguages
 } from '../../shared/models/github.models';
 
 @Injectable({
@@ -48,6 +49,12 @@ export class GithubService {
     return this.http.get<RepoHealth>(`${this.apiUrl}/repo/${owner}/${repo}/health`).pipe(
       catchError(this.handleError)
     );
+  }
+
+  getRepoLanguages(owner: string, repo: string): Observable<RepoLanguages> {
+    return this.http
+      .get<RepoLanguages>(`${this.apiUrl}/repo/${owner}/${repo}/languages`)
+      .pipe(catchError(this.handleError));
   }
 
   getCommitFrequency(owner: string, repo: string): Observable<CommitFrequencyPoint[] | 'computing'> {

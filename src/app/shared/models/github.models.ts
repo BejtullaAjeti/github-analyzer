@@ -66,6 +66,8 @@ export interface ContributorSummary {
   contributions: number;
 }
 
+export type RepoLanguages = Record<string, number>;
+
 export interface ApiError {
   error: string;
 }

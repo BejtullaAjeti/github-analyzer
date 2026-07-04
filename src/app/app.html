@@ -1,1 +1,6 @@
-<app-analyzer />
+@if (mode() === 'user') {
+  <app-analyzer (repoSearch)="onRepoSearch($event)" />
+}
+@if (mode() === 'repo') {
+  <app-repo-analyzer [repoQuery]="currentQuery()" />
+}

@@ -1,20 +1,7 @@
 import { Component, input } from '@angular/core';
 
 import { ReposResponse } from '../../shared/models/github.models';
-
-const LANGUAGE_COLORS: Record<string, string> = {
-  JavaScript: '#f1e05a',
-  TypeScript: '#3178c6',
-  Go: '#00ADD8',
-  Python: '#3572A5',
-  Rust: '#dea584',
-  C: '#555555',
-  'C++': '#f34b7d',
-  Java: '#b07219',
-  Ruby: '#701516',
-  Shell: '#89e051'
-};
-const LANGUAGE_COLOR_FALLBACK = '#8b949e';
+import { languageColor } from '../../shared/language-colors';
 
 @Component({
   selector: 'app-repos-list',
@@ -59,7 +46,5 @@ const LANGUAGE_COLOR_FALLBACK = '#8b949e';
 export class ReposListComponent {
   readonly reposData = input.required<ReposResponse>();
 
-  languageColor(language: string): string {
-    return LANGUAGE_COLORS[language] ?? LANGUAGE_COLOR_FALLBACK;
-  }
+  readonly languageColor = languageColor;
 }
