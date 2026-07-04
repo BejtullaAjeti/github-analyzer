@@ -1,6 +1,15 @@
-@if (mode() === 'user') {
-  <app-analyzer (repoSearch)="onRepoSearch($event)" />
-}
-@if (mode() === 'repo') {
-  <app-repo-analyzer [repoQuery]="currentQuery()" />
-}
+<header class="app-header">
+  <span class="app-title">GitHub Analyzer</span>
+  <button type="button" class="theme-toggle" (click)="toggleTheme()">{{ themeToggleLabel() }}</button>
+</header>
+
+<div class="app-content">
+  <app-search [initialValue]="currentQuery()" (search)="onSearch($event)" />
+
+  @if (mode() === 'user') {
+    <app-analyzer [query]="currentQuery()" />
+  }
+  @if (mode() === 'repo') {
+    <app-repo-analyzer [repoQuery]="currentQuery()" />
+  }
+</div>

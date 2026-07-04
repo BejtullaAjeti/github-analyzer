@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Output, computed, signal } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, computed, signal } from '@angular/core';
 
 @Component({
   selector: 'app-search',
@@ -29,11 +29,19 @@ import { Component, EventEmitter, Output, computed, signal } from '@angular/core
   `,
   styleUrl: './search.component.scss'
 })
-export class SearchComponent {
+export class SearchComponent implements OnInit {
+  @Input() initialValue = '';
+
   readonly username = signal('');
   readonly isRepoMode = computed(() => this.username().includes('/'));
 
   @Output() search = new EventEmitter<{ query: string; mode: 'user' | 'repo' }>();
+
+  ngOnInit(): void {
+    if (this.initialValue) {
+      this.username.set(this.initialValue);
+    }
+  }
 
   onSearch(): void {
     const query = this.username().trim();

@@ -23,18 +23,27 @@ import { RepoHealthComponent } from '../repo-detail/repo-health.component';
 import { LanguageChartComponent } from '../charts/language-chart.component';
 import { CommitFrequencyChartComponent } from '../charts/commit-frequency-chart.component';
 import { ContributorsComponent } from '../contributors/contributors.component';
+import { SkeletonLoaderComponent } from '../../shared/components/skeleton-loader.component';
+import { ErrorMessageComponent } from '../../shared/components/error-message.component';
 
 @Component({
   selector: 'app-repo-analyzer',
   standalone: true,
-  imports: [RepoHealthComponent, LanguageChartComponent, CommitFrequencyChartComponent, ContributorsComponent],
+  imports: [
+    RepoHealthComponent,
+    LanguageChartComponent,
+    CommitFrequencyChartComponent,
+    ContributorsComponent,
+    SkeletonLoaderComponent,
+    ErrorMessageComponent
+  ],
   template: `
     @if (isLoading()) {
-      <div class="loading-placeholder">Loading...</div>
+      <app-skeleton-loader mode="repo" />
     }
 
     @if (error()) {
-      <div class="error-placeholder">{{ error() }}</div>
+      <app-error-message [message]="error()!" />
     }
 
     @if (hasResults()) {

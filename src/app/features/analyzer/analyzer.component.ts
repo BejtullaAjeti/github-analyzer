@@ -1,28 +1,34 @@
-import { Component, DestroyRef, EventEmitter, Output, computed, inject, signal } from '@angular/core';
+import { Component, DestroyRef, computed, effect, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin } from 'rxjs';
 
 import { GithubService } from '../../core/services/github.service';
 import { GithubUser, ReposResponse, ActivityPoint } from '../../shared/models/github.models';
-import { SearchComponent } from '../search/search.component';
 import { ProfileCardComponent } from '../profile/profile-card.component';
 import { ReposListComponent } from '../repos/repos-list.component';
 import { LanguageChartComponent } from '../charts/language-chart.component';
 import { ActivityChartComponent } from '../charts/activity-chart.component';
+import { SkeletonLoaderComponent } from '../../shared/components/skeleton-loader.component';
+import { ErrorMessageComponent } from '../../shared/components/error-message.component';
 
 @Component({
   selector: 'app-analyzer',
   standalone: true,
-  imports: [SearchComponent, ProfileCardComponent, ReposListComponent, LanguageChartComponent, ActivityChartComponent],
+  imports: [
+    ProfileCardComponent,
+    ReposListComponent,
+    LanguageChartComponent,
+    ActivityChartComponent,
+    SkeletonLoaderComponent,
+    ErrorMessageComponent
+  ],
   template: `
-    <app-search (search)="onSearch($event)" />
-
     @if (isLoading()) {
-      <div class="loading-placeholder">Loading...</div>
+      <app-skeleton-loader mode="user" />
     }
 
     @if (error()) {
-      <div class="error-placeholder">{{ error() }}</div>
+      <app-error-message [message]="error()!" />
     }
 
     @if (hasResults()) {
@@ -43,6 +49,8 @@ export class AnalyzerComponent {
   private readonly githubService = inject(GithubService);
   private readonly destroyRef = inject(DestroyRef);
 
+  readonly query = input.required<string>();
+
   readonly isLoading = signal(false);
   readonly error = signal<string | null>(null);
   readonly profile = signal<GithubUser | null>(null);
@@ -51,14 +59,16 @@ export class AnalyzerComponent {
 
   readonly hasResults = computed(() => this.profile() !== null);
 
-  @Output() repoSearch = new EventEmitter<string>();
+  constructor() {
+    effect(() => {
+      const query = this.query();
+      if (query) {
+        this.loadData(query);
+      }
+    });
+  }
 
-  onSearch(event: { query: string; mode: 'user' | 'repo' }): void {
-    if (event.mode === 'repo') {
-      this.repoSearch.emit(event.query);
-      return;
-    }
-
+  private loadData(username: string): void {
     this.isLoading.set(true);
     this.error.set(null);
     this.profile.set(null);
@@ -66,9 +76,9 @@ export class AnalyzerComponent {
     this.activity.set([]);
 
     forkJoin({
-      profile: this.githubService.getProfile(event.query),
-      repos: this.githubService.getRepos(event.query),
-      activity: this.githubService.getActivity(event.query)
+      profile: this.githubService.getProfile(username),
+      repos: this.githubService.getRepos(username),
+      activity: this.githubService.getActivity(username)
     })
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe({
