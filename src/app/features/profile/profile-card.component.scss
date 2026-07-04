@@ -1,0 +1,80 @@
+.card {
+  background-color: var(--color-canvas-subtle);
+  border: 1px solid var(--color-border-default);
+  border-radius: 6px;
+  padding: 16px;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 1px solid var(--color-border-default);
+  display: block;
+  margin-bottom: 16px;
+}
+
+.profile-name {
+  display: block;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--color-fg-default);
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.profile-login {
+  font-size: 14px;
+  color: var(--color-fg-muted);
+  margin-top: 2px;
+}
+
+.profile-bio {
+  font-size: 14px;
+  margin: 12px 0;
+  line-height: 1.5;
+}
+
+.profile-stats {
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
+  align-items: center;
+  margin: 12px 0;
+}
+
+.stat-count {
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--color-fg-default);
+}
+
+.stat-label {
+  color: var(--color-fg-muted);
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--color-fg-muted);
+  margin-top: 4px;
+}
+
+.meta-link {
+  color: var(--color-fg-muted);
+
+  &:hover {
+    color: var(--color-accent-fg);
+  }
+}
+
+.member-since {
+  font-size: 12px;
+  color: var(--color-fg-muted);
+  margin-top: 12px;
+}
