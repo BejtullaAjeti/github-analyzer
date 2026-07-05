@@ -34,24 +34,29 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'n
         <div class="empty-state">
           GitHub is still calculating commit stats for this repository — check back in a few minutes.
         </div>
-      } @else if (data.length === 0) {
+      } @else if ((data ?? []).length === 0) {
         <div class="empty-state">No commit data available</div>
       } @else {
-        <canvas #canvas></canvas>
+        <div class="canvas-container">
+          <canvas #canvas></canvas>
+        </div>
       }
     </div>
   `,
   styleUrl: './commit-frequency-chart.component.scss'
 })
 export class CommitFrequencyChartComponent implements AfterViewInit, OnChanges, OnDestroy {
-  @Input() data: CommitFrequencyPoint[] | 'computing' = [];
+  @Input() data: CommitFrequencyPoint[] | 'computing' | null = [];
 
   @ViewChild('canvas') canvasRef?: ElementRef<HTMLCanvasElement>;
 
   private chart?: Chart;
+  private renderFrame?: number;
 
   ngAfterViewInit(): void {
-    this.chart = this.createChart();
+    this.renderFrame = requestAnimationFrame(() => {
+      this.chart = this.createChart();
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -62,11 +67,14 @@ export class CommitFrequencyChartComponent implements AfterViewInit, OnChanges, 
   }
 
   ngOnDestroy(): void {
+    if (this.renderFrame !== undefined) {
+      cancelAnimationFrame(this.renderFrame);
+    }
     this.chart?.destroy();
   }
 
   private createChart(): Chart | undefined {
-    if (this.data === 'computing' || this.data.length === 0 || !this.canvasRef) {
+    if (this.data === 'computing' || !this.data || this.data.length === 0 || !this.canvasRef) {
       return undefined;
     }
 
@@ -89,6 +97,8 @@ export class CommitFrequencyChartComponent implements AfterViewInit, OnChanges, 
       },
       options: {
         animation: false,
+        responsive: true,
+        maintainAspectRatio: false,
         scales: {
           x: {
             grid: { display: false },

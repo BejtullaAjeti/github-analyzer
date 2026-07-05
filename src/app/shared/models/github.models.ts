@@ -68,6 +68,21 @@ export interface ContributorSummary {
 
 export type RepoLanguages = Record<string, number>;
 
+export interface UserSearchResult {
+  login: string;
+  avatar_url: string;
+  html_url: string;
+  type: string;
+}
+
+export interface RepoSearchResult {
+  full_name: string;
+  description: string | null;
+  stargazers_count: number;
+  language: string | null;
+  html_url: string;
+}
+
 export interface ApiError {
   error: string;
 }

@@ -29,21 +29,26 @@ const TOP_N = 7;
   template: `
     <div class="chart-wrapper">
       <div class="chart-header">Languages</div>
-      <canvas #canvas></canvas>
+      <div class="canvas-container">
+        <canvas #canvas></canvas>
+      </div>
     </div>
   `,
   styleUrl: './language-chart.component.scss'
 })
 export class LanguageChartComponent implements AfterViewInit, OnChanges, OnDestroy {
-  @Input() languages: Record<string, number> = {};
+  @Input() languages: Record<string, number> | null = {};
   @Input() valueLabel = 'repos';
 
   @ViewChild('canvas') canvasRef!: ElementRef<HTMLCanvasElement>;
 
   private chart?: Chart;
+  private renderFrame?: number;
 
   ngAfterViewInit(): void {
-    this.chart = this.createChart();
+    this.renderFrame = requestAnimationFrame(() => {
+      this.chart = this.createChart();
+    });
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -57,11 +62,14 @@ export class LanguageChartComponent implements AfterViewInit, OnChanges, OnDestr
   }
 
   ngOnDestroy(): void {
+    if (this.renderFrame !== undefined) {
+      cancelAnimationFrame(this.renderFrame);
+    }
     this.chart?.destroy();
   }
 
   private groupedEntries(): [string, number][] {
-    const sorted = Object.entries(this.languages).sort(([, a], [, b]) => b - a);
+    const sorted = Object.entries(this.languages ?? {}).sort(([, a], [, b]) => b - a);
     const top = sorted.slice(0, TOP_N);
     const rest = sorted.slice(TOP_N);
     const otherTotal = rest.reduce((sum, [, value]) => sum + value, 0);
@@ -90,6 +98,8 @@ export class LanguageChartComponent implements AfterViewInit, OnChanges, OnDestr
       },
       options: {
         animation: false,
+        responsive: true,
+        maintainAspectRatio: false,
         cutout: '60%',
         plugins: {
           legend: {

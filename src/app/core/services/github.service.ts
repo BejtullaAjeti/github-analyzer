@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, catchError, map, throwError } from 'rxjs';
 
 import { environment } from '../../../environments/environment';
@@ -11,7 +11,9 @@ import {
   RepoHealth,
   CommitFrequencyPoint,
   ContributorSummary,
-  RepoLanguages
+  RepoLanguages,
+  UserSearchResult,
+  RepoSearchResult
 } from '../../shared/models/github.models';
 
 @Injectable({
@@ -34,7 +36,8 @@ export class GithubService {
   }
 
   getActivity(username: string): Observable<ActivityPoint[]> {
-    return this.http.get<ActivityPoint[]>(`${this.apiUrl}/activity/${username}`).pipe(
+    return this.http.get<ActivityPoint[] | null>(`${this.apiUrl}/activity/${username}`).pipe(
+      map(res => res ?? []),
       catchError(this.handleError)
     );
   }
@@ -59,20 +62,44 @@ export class GithubService {
 
   getCommitFrequency(owner: string, repo: string): Observable<CommitFrequencyPoint[] | 'computing'> {
     return this.http
-      .get<CommitFrequencyPoint[]>(`${this.apiUrl}/repo/${owner}/${repo}/commits`, { observe: 'response' })
+      .get<CommitFrequencyPoint[] | null>(`${this.apiUrl}/repo/${owner}/${repo}/commits`, { observe: 'response' })
       .pipe(
-        map(res => (res.status === 202 ? 'computing' : (res.body as CommitFrequencyPoint[]))),
+        map(res => (res.status === 202 ? 'computing' : (res.body ?? []))),
         catchError(this.handleError)
       );
   }
 
   getContributors(owner: string, repo: string): Observable<ContributorSummary[]> {
     return this.http
-      .get<ContributorSummary[]>(`${this.apiUrl}/repo/${owner}/${repo}/contributors`)
-      .pipe(catchError(this.handleError));
+      .get<ContributorSummary[] | null>(`${this.apiUrl}/repo/${owner}/${repo}/contributors`)
+      .pipe(
+        map(res => res ?? []),
+        catchError(this.handleError)
+      );
   }
 
-  private handleError(err: { status: number }): Observable<never> {
+  searchUsers(query: string): Observable<UserSearchResult[]> {
+    return this.http
+      .get<UserSearchResult[] | null>(`${this.apiUrl}/search/users`, { params: { q: query } })
+      .pipe(
+        map(res => res ?? []),
+        catchError(this.handleError)
+      );
+  }
+
+  searchRepos(query: string): Observable<RepoSearchResult[]> {
+    return this.http
+      .get<RepoSearchResult[] | null>(`${this.apiUrl}/search/repos`, { params: { q: query } })
+      .pipe(
+        map(res => res ?? []),
+        catchError(this.handleError)
+      );
+  }
+
+  private handleError(err: HttpErrorResponse): Observable<never> {
+    // TEMP DEBUG: remove once the golang/go "not found" issue is diagnosed
+    console.error('GithubService request failed:', err.status, err.url, err.message);
+
     if (err.status === 404) {
       return throwError(() => new Error('not found'));
     }

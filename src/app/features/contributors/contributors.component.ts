@@ -39,9 +39,9 @@ const AVATAR_FALLBACK =
   styleUrl: './contributors.component.scss'
 })
 export class ContributorsComponent {
-  readonly contributors = input<ContributorSummary[]>([]);
+  readonly contributors = input<ContributorSummary[] | null>([]);
 
-  readonly topContributors = computed(() => this.contributors().slice(0, 10));
+  readonly topContributors = computed(() => (this.contributors() ?? []).slice(0, 10));
   readonly maxContributions = computed(() => this.topContributors()[0]?.contributions ?? 1);
 
   barWidth(count: number): string {

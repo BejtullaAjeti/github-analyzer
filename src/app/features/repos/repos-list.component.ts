@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, computed, input } from '@angular/core';
 
 import { ReposResponse } from '../../shared/models/github.models';
 import { languageColor } from '../../shared/language-colors';
@@ -9,10 +9,10 @@ import { languageColor } from '../../shared/language-colors';
   imports: [],
   template: `
     <div class="card">
-      @if (reposData().top_repos.length === 0) {
+      @if (topRepos().length === 0) {
         <p class="empty-state">No repositories found</p>
       } @else {
-        @for (repo of reposData().top_repos; track repo.html_url) {
+        @for (repo of topRepos(); track repo.html_url) {
           <div class="repo-item">
             <a class="repo-name" [href]="repo.html_url" target="_blank" rel="noopener noreferrer">{{ repo.name }}</a>
 
@@ -45,6 +45,8 @@ import { languageColor } from '../../shared/language-colors';
 })
 export class ReposListComponent {
   readonly reposData = input.required<ReposResponse>();
+
+  readonly topRepos = computed(() => this.reposData().top_repos ?? []);
 
   readonly languageColor = languageColor;
 }

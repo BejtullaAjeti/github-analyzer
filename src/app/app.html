@@ -4,8 +4,22 @@
 </header>
 
 <div class="app-content">
-  <app-search [initialValue]="currentQuery()" (search)="onSearch($event)" />
+  <app-search [initialValue]="lastQuery()" (search)="onSearch($event)" />
 
+  @if (mode() !== 'results') {
+    <button type="button" class="back-button" (click)="backToResults()">← Back to results</button>
+  }
+
+  @if (mode() === 'results') {
+    <app-search-results
+      [mode]="searchMode()"
+      [userResults]="userResults()"
+      [repoResults]="repoResults()"
+      [isLoading]="isSearching()"
+      [error]="searchError()"
+      (select)="onSelectResult($event)"
+    />
+  }
   @if (mode() === 'user') {
     <app-analyzer [query]="currentQuery()" />
   }
