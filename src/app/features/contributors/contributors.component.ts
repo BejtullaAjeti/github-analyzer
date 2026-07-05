@@ -10,31 +10,37 @@ const AVATAR_FALLBACK =
   standalone: true,
   imports: [],
   template: `
-    <div class="contributors-header">Top Contributors</div>
-    <ul class="contributor-list">
-      @for (contributor of topContributors(); track contributor.login) {
-        <li class="contributor-item">
-          <img
-            class="contributor-avatar"
-            [src]="contributor.avatar_url"
-            [alt]="contributor.login"
-            (error)="onAvatarError($event)"
-          />
-          <a
-            class="contributor-login"
-            [href]="'https://github.com/' + contributor.login"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {{ contributor.login }}
-          </a>
-          <div class="contribution-bar-track">
-            <div class="contribution-bar-fill" [style.width]="barWidth(contributor.contributions)"></div>
-          </div>
-          <span class="contribution-count">{{ contributor.contributions }}</span>
-        </li>
-      }
-    </ul>
+    <div class="pane">
+      <div class="pane-title">
+        <span>Contributors</span>
+        <span class="pane-title-meta">{{ topContributors().length }}</span>
+      </div>
+      <ul class="contributor-list">
+        @for (contributor of topContributors(); track contributor.login; let i = $index) {
+          <li class="contributor-item">
+            <span class="rank">{{ rank(i) }}</span>
+            <img
+              class="contributor-avatar"
+              [src]="contributor.avatar_url"
+              [alt]="contributor.login"
+              (error)="onAvatarError($event)"
+            />
+            <a
+              class="contributor-login"
+              [href]="'https://github.com/' + contributor.login"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ contributor.login }}
+            </a>
+            <div class="contribution-bar-track">
+              <div class="contribution-bar-fill" [style.width]="barWidth(contributor.contributions)"></div>
+            </div>
+            <span class="contribution-count">{{ contributor.contributions }}</span>
+          </li>
+        }
+      </ul>
+    </div>
   `,
   styleUrl: './contributors.component.scss'
 })
@@ -47,6 +53,10 @@ export class ContributorsComponent {
   barWidth(count: number): string {
     const pct = (count / this.maxContributions()) * 100;
     return `${Math.max(pct, 2)}%`;
+  }
+
+  rank(index: number): string {
+    return String(index + 1).padStart(2, '0');
   }
 
   onAvatarError(event: Event): void {

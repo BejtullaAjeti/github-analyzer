@@ -1,27 +1,12 @@
-.chart-header {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--color-fg-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: 12px;
-}
-
-.chart-wrapper {
-  background-color: var(--color-canvas-subtle);
-  border: 1px solid var(--color-border-default);
-  border-radius: 6px;
-  padding: 16px;
-}
-
 .canvas-container {
   position: relative;
   height: 220px;
 }
 
 .empty-state {
-  font-size: 13px;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
   color: var(--color-fg-muted);
-  padding: 32px 0;
+  padding: var(--space-8) 0;
   text-align: center;
 }

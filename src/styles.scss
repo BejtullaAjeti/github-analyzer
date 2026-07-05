@@ -21,8 +21,19 @@
   --space-2: 8px;
   --space-3: 12px;
   --space-4: 16px;
+  --space-5: 20px;
   --space-6: 24px;
   --space-8: 32px;
+  --space-10: 40px;
+
+  --text-xs: 11px;
+  --text-sm: 13px;
+  --text-base: 14px;
+  --text-md: 16px;
+  --text-lg: 22px;
+  --text-xl: 30px;
+
+  --radius-sm: 2px;
 }
 
 html.light {
@@ -60,6 +71,7 @@ body {
   font-family: var(--font-sans);
   background-color: var(--color-canvas-default);
   color: var(--color-fg-default);
+  line-height: 1.4;
 }
 
 a {
@@ -69,4 +81,37 @@ a {
   &:hover {
     text-decoration: underline;
   }
+}
+
+/* Shared "pane" motif: hairline-bordered panel with a mono title bar,
+   replacing the rounded-card idiom everywhere a content block appears. */
+.pane {
+  background-color: var(--color-canvas-subtle);
+  border: 1px solid var(--color-border-default);
+}
+
+.pane-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--color-canvas-inset);
+  border-bottom: 1px solid var(--color-border-default);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-fg-muted);
+}
+
+.pane-title-meta {
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.pane-body {
+  padding: var(--space-3);
 }

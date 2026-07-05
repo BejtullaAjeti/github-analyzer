@@ -32,13 +32,12 @@ import { ErrorMessageComponent } from '../../shared/components/error-message.com
     }
 
     @if (hasResults()) {
-      <div class="results-grid">
+      <div class="analyzer-stack">
         <app-profile-card [user]="profile()!" />
-        <div class="right-column">
-          <app-repos-list [reposData]="repos()!" />
+        <app-repos-list [reposData]="repos()!" />
+        <div class="chart-row">
           <app-language-chart [languages]="repos()!.languages" [valueLabel]="'repos'" />
           <app-activity-chart [activity]="activity()" />
-          <!-- <app-commit-frequency-chart /> -->
         </div>
       </div>
     }

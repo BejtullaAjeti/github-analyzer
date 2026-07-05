@@ -1,43 +1,72 @@
+@use '../../shared/breakpoints' as *;
+
 .repo-header {
   width: 100%;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--color-border-default);
+  padding: var(--space-3);
+}
+
+.repo-title-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
 }
 
 .repo-fullname {
   font-family: var(--font-mono);
-  font-size: 20px;
+  font-size: var(--text-lg);
   font-weight: 600;
   color: var(--color-fg-default);
 }
 
+.hero-stat {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--color-fg-default);
+  flex-shrink: 0;
+}
+
+.hero-count {
+  font-family: var(--font-mono);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  line-height: 1;
+}
+
 .repo-desc {
-  font-size: 14px;
+  font-size: var(--text-base);
   color: var(--color-fg-muted);
-  margin-top: 4px;
+  margin-top: var(--space-1);
 }
 
 .repo-stats-row {
   display: flex;
-  gap: 16px;
-  margin-top: 12px;
-  font-size: 12px;
+  gap: var(--space-4);
+  margin-top: var(--space-2);
+  font-size: var(--text-xs);
   font-family: var(--font-mono);
   color: var(--color-fg-muted);
+}
+
+.meta-stat {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
 }
 
 .repo-content {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-top: 16px;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
 }
 
 .full-width {
   grid-column: 1 / -1;
 }
 
-@media (max-width: 768px) {
+@media (max-width: $bp-mobile) {
   .repo-content {
     grid-template-columns: 1fr;
   }

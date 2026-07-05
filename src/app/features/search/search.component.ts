@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output, computed, signal } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, computed, input, signal } from '@angular/core';
 
 @Component({
   selector: 'app-search',
@@ -9,21 +9,22 @@ import { Component, EventEmitter, Input, OnInit, Output, computed, signal } from
       <button
         type="button"
         class="tab-button"
-        [class.active]="searchMode() === 'user'"
-        (click)="searchMode.set('user')"
+        [class.active]="mode() === 'user'"
+        (click)="modeChange.emit('user')"
       >
         Users
       </button>
       <button
         type="button"
         class="tab-button"
-        [class.active]="searchMode() === 'repo'"
-        (click)="searchMode.set('repo')"
+        [class.active]="mode() === 'repo'"
+        (click)="modeChange.emit('repo')"
       >
         Repositories
       </button>
     </div>
     <div class="search-row">
+      <span class="prompt-glyph">&gt;</span>
       <input
         type="text"
         class="search-input"
@@ -32,26 +33,28 @@ import { Component, EventEmitter, Input, OnInit, Output, computed, signal } from
         (input)="query.set($any($event.target).value)"
         (keydown.enter)="onSearch()"
       />
-      <button
-        type="button"
-        class="search-button"
-        [disabled]="query().trim().length === 0"
-        (click)="onSearch()"
-      >
-        Analyze
-      </button>
     </div>
+    <button
+      type="button"
+      class="search-button"
+      [disabled]="query().trim().length === 0"
+      (click)="onSearch()"
+    >
+      Analyze
+    </button>
   `,
   styleUrl: './search.component.scss'
 })
 export class SearchComponent implements OnInit {
+  readonly mode = input<'user' | 'repo'>('user');
+  @Output() modeChange = new EventEmitter<'user' | 'repo'>();
+
   @Input() initialValue = '';
 
-  readonly searchMode = signal<'user' | 'repo'>('user');
   readonly query = signal('');
 
   readonly placeholder = computed(() =>
-    this.searchMode() === 'repo' ? 'Enter a repository name' : 'Enter a GitHub username'
+    this.mode() === 'repo' ? 'repository name' : 'username'
   );
 
   @Output() search = new EventEmitter<{ query: string; mode: 'user' | 'repo' }>();
@@ -67,6 +70,6 @@ export class SearchComponent implements OnInit {
     if (!query) {
       return;
     }
-    this.search.emit({ query, mode: this.searchMode() });
+    this.search.emit({ query, mode: this.mode() });
   }
 }

@@ -47,24 +47,32 @@ import { ErrorMessageComponent } from '../../shared/components/error-message.com
     }
 
     @if (hasResults()) {
-      <div class="repo-header">
-        <div class="repo-fullname">{{ repoDetail()!.full_name }}</div>
+      <div class="pane repo-header">
+        <div class="repo-title-row">
+          <div class="repo-fullname">{{ repoDetail()!.full_name }}</div>
+          <div class="hero-stat">
+            <svg viewBox="0 0 16 16" width="18" height="18" fill="currentColor"><path d="M8 .3l2.2 4.9 5.3.6-4 3.7 1.1 5.3L8 12.2l-4.6 2.6 1.1-5.3-4-3.7 5.3-.6L8 .3z"/></svg>
+            <span class="hero-count">{{ repoDetail()!.stargazers_count }}</span>
+          </div>
+        </div>
         @if (repoDetail()!.description) {
           <div class="repo-desc">{{ repoDetail()!.description }}</div>
         }
         <div class="repo-stats-row">
-          <span>★ {{ repoDetail()!.stargazers_count }}</span>
-          <span>⑂ {{ repoDetail()!.forks_count }}</span>
-          <span>{{ repoDetail()!.open_issues_count }} open issues</span>
-          <span>{{ repoDetail()!.watchers_count }} watchers</span>
+          <span class="meta-stat">
+            <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor"><path d="M5 3.5a1.5 1.5 0 1 1 3 0 1.5 1.5 0 0 1-3 0Zm5.5 1.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3ZM6.5 5v1.5a1.5 1.5 0 0 0 1.5 1.5h.5v3.75a1.5 1.5 0 1 0 1 0V8h.5a1.5 1.5 0 0 0 1.5-1.5V5H10v1.5a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5V5H6.5Z"/></svg>
+            {{ repoDetail()!.forks_count }}
+          </span>
+          <span class="meta-stat">{{ repoDetail()!.open_issues_count }} open issues</span>
+          <span class="meta-stat">{{ repoDetail()!.watchers_count }} watchers</span>
         </div>
       </div>
 
       <div class="repo-content">
+        <app-repo-health class="full-width" [health]="repoHealth()!" />
         <app-commit-frequency-chart class="full-width" [data]="commitFrequency()" />
-        <app-repo-health [health]="repoHealth()!" />
         <app-language-chart [languages]="languages()" [valueLabel]="'bytes'" />
-        <app-contributors class="full-width" [contributors]="contributors()" />
+        <app-contributors [contributors]="contributors()" />
       </div>
     }
   `,

@@ -1,48 +1,72 @@
-.card {
-  background-color: var(--color-canvas-subtle);
-  border: 1px solid var(--color-border-default);
-  border-radius: 6px;
-  padding: 16px;
+.results-pane {
+  border: none;
+  border-radius: 0;
+}
+
+.pane-body {
+  padding: 0;
 }
 
 .empty-state {
   color: var(--color-fg-muted);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  padding: var(--space-3);
 }
 
 .result-row {
+  position: relative;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 0;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3) var(--space-2) calc(var(--space-3) + 14px);
   border-bottom: 1px solid var(--color-border-muted);
+  border-left: 2px solid transparent;
   cursor: pointer;
-  transition: background-color 100ms;
-
-  &:last-child {
-    border-bottom: none;
-  }
+  transition: background-color 100ms, border-color 100ms;
 
   &:hover {
     background-color: var(--color-border-muted);
   }
+
+  &.active {
+    background-color: var(--color-canvas-inset);
+    border-left-color: var(--color-accent-fg);
+
+    &::before {
+      content: '>';
+      position: absolute;
+      left: var(--space-2);
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: var(--font-mono);
+      font-size: var(--text-sm);
+      color: var(--color-accent-fg);
+    }
+  }
 }
 
 .result-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--radius-sm);
   flex-shrink: 0;
 }
 
 .result-login {
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: var(--text-sm);
   color: var(--color-accent-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .type-badge {
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
   color: var(--color-fg-muted);
+  flex-shrink: 0;
 }
 
 .result-main {
@@ -52,16 +76,22 @@
 
 .result-fullname {
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--color-accent-fg);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .result-description {
-  font-size: 13px;
+  font-size: var(--text-xs);
   color: var(--color-fg-muted);
-  margin: 4px 0 0;
+  margin: 2px 0 0;
   line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 
   &.empty {
     font-style: italic;
@@ -70,10 +100,10 @@
 
 .result-meta {
   display: flex;
-  gap: 12px;
+  gap: var(--space-2);
   align-items: center;
   color: var(--color-fg-muted);
-  font-size: 12px;
+  font-size: var(--text-xs);
   flex-shrink: 0;
 }
 

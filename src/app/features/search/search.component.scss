@@ -1,15 +1,17 @@
 .search-tabs {
   display: flex;
-  gap: 4px;
-  margin-bottom: 8px;
+  gap: var(--space-1);
+  margin-bottom: var(--space-3);
 }
 
 .tab-button {
-  padding: 6px 12px;
-  font-size: 13px;
+  flex: 1;
+  padding: var(--space-1) var(--space-2);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
   background: transparent;
   border: 1px solid var(--color-border-default);
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   color: var(--color-fg-muted);
   cursor: pointer;
   transition: background-color 100ms, color 100ms, border-color 100ms;
@@ -23,32 +25,50 @@
 
 .search-row {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: var(--space-1);
+  border-bottom: 1px solid var(--color-border-default);
+  padding-bottom: var(--space-1);
+}
+
+.prompt-glyph {
+  font-family: var(--font-mono);
+  color: var(--color-accent-fg);
+  flex-shrink: 0;
 }
 
 .search-input {
   flex: 1;
-  height: 32px;
-  padding: 0 12px;
-  font-size: 14px;
-  background-color: var(--color-canvas-inset);
-  border: 1px solid var(--color-border-default);
-  border-radius: 6px;
+  min-width: 0;
+  height: 24px;
+  padding: 0;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  background: transparent;
+  border: none;
   color: var(--color-fg-default);
 
   &:focus {
     outline: none;
-    border-color: var(--color-accent-fg);
   }
 }
 
 .search-button {
-  height: 32px;
-  padding: 0 16px;
+  width: 100%;
+  margin-top: var(--space-2);
+  height: 28px;
   background-color: var(--color-accent-emphasis);
   color: #ffffff;
   border: none;
-  border-radius: 6px;
-  font-size: 14px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
   cursor: pointer;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
 }

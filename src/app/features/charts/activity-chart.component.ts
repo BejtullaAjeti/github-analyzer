@@ -6,7 +6,8 @@ import {
   OnChanges,
   OnDestroy,
   SimpleChanges,
-  ViewChild
+  ViewChild,
+  effect
 } from '@angular/core';
 import {
   BarController,
@@ -18,6 +19,7 @@ import {
 } from 'chart.js';
 
 import { ActivityPoint } from '../../shared/models/github.models';
+import { cssVar, themeVersion } from '../../shared/theme';
 
 Chart.register(BarElement, BarController, CategoryScale, LinearScale, Tooltip);
 
@@ -29,15 +31,17 @@ const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'n
   standalone: true,
   imports: [],
   template: `
-    <div class="chart-wrapper">
-      <div class="chart-header">Activity</div>
-      @if (recentActivity().length === 0) {
-        <div class="empty-state">No recent activity</div>
-      } @else {
-        <div class="canvas-container">
-          <canvas #canvas></canvas>
-        </div>
-      }
+    <div class="pane">
+      <div class="pane-title"><span>Activity</span></div>
+      <div class="pane-body">
+        @if (recentActivity().length === 0) {
+          <div class="empty-state">No recent activity</div>
+        } @else {
+          <div class="canvas-container">
+            <canvas #canvas></canvas>
+          </div>
+        }
+      </div>
     </div>
   `,
   styleUrl: './activity-chart.component.scss'
@@ -49,6 +53,16 @@ export class ActivityChartComponent implements AfterViewInit, OnChanges, OnDestr
 
   private chart?: Chart;
   private renderFrame?: number;
+
+  constructor() {
+    effect(() => {
+      themeVersion();
+      if (this.chart) {
+        this.chart.destroy();
+        this.chart = this.createChart();
+      }
+    });
+  }
 
   ngAfterViewInit(): void {
     this.renderFrame = requestAnimationFrame(() => {
@@ -83,6 +97,7 @@ export class ActivityChartComponent implements AfterViewInit, OnChanges, OnDestr
 
     const labels = points.map(point => dateFormatter.format(new Date(point.date)));
     const data = points.map(point => point.count);
+    const mutedColor = cssVar('--color-fg-muted');
 
     return new Chart(this.canvasRef.nativeElement, {
       type: 'bar',
@@ -91,7 +106,7 @@ export class ActivityChartComponent implements AfterViewInit, OnChanges, OnDestr
         datasets: [
           {
             data,
-            backgroundColor: '#58a6ff',
+            backgroundColor: cssVar('--color-accent-fg'),
             borderRadius: 2,
             borderSkipped: false
           }
@@ -104,22 +119,22 @@ export class ActivityChartComponent implements AfterViewInit, OnChanges, OnDestr
         scales: {
           x: {
             grid: { display: false },
-            ticks: { maxTicksLimit: 15, font: { size: 11, family: 'var(--font-mono)' }, color: '#8b949e' }
+            ticks: { maxTicksLimit: 15, font: { size: 11, family: 'var(--font-mono)' }, color: mutedColor }
           },
           y: {
             beginAtZero: true,
-            ticks: { stepSize: 1, precision: 0, font: { size: 11, family: 'var(--font-mono)' }, color: '#8b949e' },
-            grid: { color: '#21262d' }
+            ticks: { stepSize: 1, precision: 0, font: { size: 11, family: 'var(--font-mono)' }, color: mutedColor },
+            grid: { color: cssVar('--color-border-muted') }
           }
         },
         plugins: {
           legend: { display: false },
           tooltip: {
-            backgroundColor: '#161b22',
-            borderColor: '#30363d',
+            backgroundColor: cssVar('--color-canvas-inset'),
+            borderColor: cssVar('--color-border-default'),
             borderWidth: 1,
-            titleColor: '#e6edf3',
-            bodyColor: '#8b949e'
+            titleColor: cssVar('--color-fg-default'),
+            bodyColor: mutedColor
           }
         }
       }

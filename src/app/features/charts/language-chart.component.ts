@@ -6,7 +6,8 @@ import {
   OnChanges,
   OnDestroy,
   SimpleChanges,
-  ViewChild
+  ViewChild,
+  effect
 } from '@angular/core';
 import {
   ArcElement,
@@ -17,6 +18,7 @@ import {
 } from 'chart.js';
 
 import { languageColor } from '../../shared/language-colors';
+import { cssVar, themeVersion } from '../../shared/theme';
 
 Chart.register(ArcElement, DoughnutController, Tooltip, Legend);
 
@@ -27,10 +29,12 @@ const TOP_N = 7;
   standalone: true,
   imports: [],
   template: `
-    <div class="chart-wrapper">
-      <div class="chart-header">Languages</div>
-      <div class="canvas-container">
-        <canvas #canvas></canvas>
+    <div class="pane">
+      <div class="pane-title"><span>Languages</span></div>
+      <div class="pane-body">
+        <div class="canvas-container">
+          <canvas #canvas></canvas>
+        </div>
       </div>
     </div>
   `,
@@ -44,6 +48,16 @@ export class LanguageChartComponent implements AfterViewInit, OnChanges, OnDestr
 
   private chart?: Chart;
   private renderFrame?: number;
+
+  constructor() {
+    effect(() => {
+      themeVersion();
+      if (this.chart) {
+        this.chart.destroy();
+        this.chart = this.createChart();
+      }
+    });
+  }
 
   ngAfterViewInit(): void {
     this.renderFrame = requestAnimationFrame(() => {
@@ -80,7 +94,8 @@ export class LanguageChartComponent implements AfterViewInit, OnChanges, OnDestr
     const entries = this.groupedEntries();
     const labels = entries.map(([name]) => name);
     const data = entries.map(([, value]) => value);
-    const colors = entries.map(([name]) => (name === 'Other' ? '#8b949e' : languageColor(name)));
+    const otherColor = cssVar('--color-fg-muted');
+    const colors = entries.map(([name]) => (name === 'Other' ? otherColor : languageColor(name)));
     const valueLabel = this.valueLabel;
 
     return new Chart(this.canvasRef.nativeElement, {
@@ -91,7 +106,7 @@ export class LanguageChartComponent implements AfterViewInit, OnChanges, OnDestr
           {
             data,
             backgroundColor: colors,
-            borderColor: '#0d1117',
+            borderColor: cssVar('--color-canvas-subtle'),
             borderWidth: 2
           }
         ]
@@ -106,15 +121,15 @@ export class LanguageChartComponent implements AfterViewInit, OnChanges, OnDestr
             position: 'right',
             labels: {
               font: { size: 12 },
-              color: getComputedStyle(document.documentElement).getPropertyValue('--color-fg-default')
+              color: cssVar('--color-fg-default')
             }
           },
           tooltip: {
-            backgroundColor: '#161b22',
-            borderColor: '#30363d',
+            backgroundColor: cssVar('--color-canvas-inset'),
+            borderColor: cssVar('--color-border-default'),
             borderWidth: 1,
-            titleColor: '#e6edf3',
-            bodyColor: '#8b949e',
+            titleColor: cssVar('--color-fg-default'),
+            bodyColor: cssVar('--color-fg-muted'),
             callbacks: {
               label: ctx => `${ctx.label}: ${ctx.parsed.toLocaleString()} ${valueLabel}`
             }

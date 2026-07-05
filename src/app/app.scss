@@ -1,8 +1,17 @@
+@use './shared/breakpoints' as *;
+
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+}
+
 .app-header {
   background-color: var(--color-canvas-subtle);
-  border-bottom: 1px solid var(--color-border-default);
-  height: 48px;
-  padding: 0 16px;
+  border-bottom: 2px solid var(--color-accent-emphasis);
+  height: 40px;
+  flex: 0 0 auto;
+  padding: 0 var(--space-4);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -10,7 +19,7 @@
 
 .app-title {
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: var(--text-md);
   font-weight: 600;
   color: var(--color-fg-default);
 }
@@ -18,28 +27,69 @@
 .theme-toggle {
   border: none;
   background: none;
-  font-size: 12px;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
   color: var(--color-fg-muted);
   cursor: pointer;
 }
 
-.app-content {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px 16px;
+.app-body {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 280px 1fr;
 }
 
-.back-button {
-  display: inline-block;
-  margin: 16px 0;
-  padding: 0;
-  background: none;
-  border: none;
-  font-size: 13px;
-  color: var(--color-accent-fg);
-  cursor: pointer;
+.rail {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border-right: 1px solid var(--color-border-default);
+}
 
-  &:hover {
-    text-decoration: underline;
+.rail-search {
+  flex: 0 0 auto;
+  padding: var(--space-3);
+  border-bottom: 1px solid var(--color-border-default);
+}
+
+.rail-results {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.main-pane {
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-4);
+}
+
+.main-empty {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-fg-subtle);
+}
+
+@media (max-width: $bp-mobile) {
+  .app-body {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+  }
+
+  .rail {
+    border-right: none;
+    border-bottom: 1px solid var(--color-border-default);
+  }
+
+  .rail-results {
+    flex: 0 0 auto;
+    max-height: 40vh;
   }
 }

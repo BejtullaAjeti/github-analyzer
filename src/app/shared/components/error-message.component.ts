@@ -23,7 +23,8 @@ import { Component, Input } from '@angular/core';
       padding: 12px 16px;
       background: color-mix(in srgb, var(--color-danger-fg) 10%, transparent);
       border: 1px solid color-mix(in srgb, var(--color-danger-fg) 40%, transparent);
-      border-radius: 6px;
+      border-radius: var(--radius-sm);
+      font-family: var(--font-mono);
       font-size: 13px;
       color: var(--color-fg-default);
     }

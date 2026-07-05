@@ -1,17 +1,19 @@
-.results-grid {
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  gap: 16px;
-}
+@use '../../shared/breakpoints' as *;
 
-.right-column {
+.analyzer-stack {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-4);
 }
 
-@media (max-width: 768px) {
-  .results-grid {
+.chart-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+@media (max-width: $bp-mobile) {
+  .chart-row {
     grid-template-columns: 1fr;
   }
 }

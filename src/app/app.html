@@ -3,27 +3,33 @@
   <button type="button" class="theme-toggle" (click)="toggleTheme()">{{ themeToggleLabel() }}</button>
 </header>
 
-<div class="app-content">
-  <app-search [initialValue]="lastQuery()" (search)="onSearch($event)" />
+<div class="app-body">
+  <aside class="rail">
+    <div class="rail-search">
+      <app-search [mode]="searchMode()" [initialValue]="lastQuery()" (modeChange)="onModeChange($event)" (search)="onSearch($event)" />
+    </div>
+    <div class="rail-results">
+      <app-search-results
+        [mode]="searchMode()"
+        [userResults]="userResults()"
+        [repoResults]="repoResults()"
+        [isLoading]="isSearching()"
+        [error]="searchError()"
+        [selectedQuery]="selected()?.query ?? null"
+        (select)="onSelectResult($event)"
+      />
+    </div>
+  </aside>
 
-  @if (mode() !== 'results') {
-    <button type="button" class="back-button" (click)="backToResults()">← Back to results</button>
-  }
-
-  @if (mode() === 'results') {
-    <app-search-results
-      [mode]="searchMode()"
-      [userResults]="userResults()"
-      [repoResults]="repoResults()"
-      [isLoading]="isSearching()"
-      [error]="searchError()"
-      (select)="onSelectResult($event)"
-    />
-  }
-  @if (mode() === 'user') {
-    <app-analyzer [query]="currentQuery()" />
-  }
-  @if (mode() === 'repo') {
-    <app-repo-analyzer [repoQuery]="currentQuery()" />
-  }
+  <main class="main-pane">
+    @if (selected(); as sel) {
+      @if (sel.type === 'user') {
+        <app-analyzer [query]="sel.query" />
+      } @else {
+        <app-repo-analyzer [repoQuery]="sel.query" />
+      }
+    } @else {
+      <div class="main-empty">Select a result to begin</div>
+    }
+  </main>
 </div>

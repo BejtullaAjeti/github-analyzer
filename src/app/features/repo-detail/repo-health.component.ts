@@ -7,25 +7,30 @@ import { RepoHealth } from '../../shared/models/github.models';
   standalone: true,
   imports: [],
   template: `
-    <div class="health-grid">
-      <div class="health-cell">
-        <div class="health-label">Last Commit</div>
-        <div class="health-value">{{ relativeTime(health.last_commit_at) }}</div>
-      </div>
-      <div class="health-cell">
-        <div class="health-label">Open Issues</div>
-        <div class="health-value" [style.color]="issueColor(health.open_issues)">{{ health.open_issues }}</div>
-      </div>
-      <div class="health-cell">
-        <div class="health-label">Stars</div>
-        <div class="health-value">{{ health.stars }}</div>
-      </div>
-      <div class="health-cell">
-        <div class="health-label">Watchers</div>
-        <div class="health-value">{{ health.watchers }}</div>
+    <div class="pane">
+      <div class="pane-title"><span>Health</span></div>
+      <div class="pane-body">
+        <div class="health-grid">
+          <div class="health-cell">
+            <div class="health-label">Last Commit</div>
+            <div class="health-value">{{ relativeTime(health.last_commit_at) }}</div>
+          </div>
+          <div class="health-cell">
+            <div class="health-label">Open Issues</div>
+            <div class="health-value" [style.color]="issueColor(health.open_issues)">{{ health.open_issues }}</div>
+          </div>
+          <div class="health-cell">
+            <div class="health-label">Stars</div>
+            <div class="health-value">{{ health.stars }}</div>
+          </div>
+          <div class="health-cell">
+            <div class="health-label">Watchers</div>
+            <div class="health-value">{{ health.watchers }}</div>
+          </div>
+        </div>
+        <div class="trend-note">{{ health.stars_trend_note }}</div>
       </div>
     </div>
-    <div class="trend-note">{{ health.stars_trend_note }}</div>
   `,
   styleUrl: './repo-health.component.scss'
 })

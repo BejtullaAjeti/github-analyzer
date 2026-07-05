@@ -4,12 +4,18 @@ import { ActivatedRoute, Router } from '@angular/router';
 
 import { GithubService } from './core/services/github.service';
 import { UserSearchResult, RepoSearchResult } from './shared/models/github.models';
+import { themeVersion } from './shared/theme';
 import { AnalyzerComponent } from './features/analyzer/analyzer.component';
 import { RepoAnalyzerComponent } from './features/repo-analyzer/repo-analyzer.component';
 import { SearchComponent } from './features/search/search.component';
 import { SearchResultsComponent } from './features/search-results/search-results.component';
 
 const THEME_KEY = 'theme';
+
+interface Selection {
+  type: 'user' | 'repo';
+  query: string;
+}
 
 @Component({
   selector: 'app-root',
@@ -25,10 +31,10 @@ export class App implements OnInit {
 
   protected readonly title = signal('github-analyzer');
 
-  readonly mode = signal<'results' | 'user' | 'repo'>('results');
   readonly searchMode = signal<'user' | 'repo'>('user');
   readonly currentQuery = signal('');
   readonly lastQuery = signal('');
+  readonly selected = signal<Selection | null>(null);
 
   readonly userResults = signal<UserSearchResult[]>([]);
   readonly repoResults = signal<RepoSearchResult[]>([]);
@@ -58,10 +64,17 @@ export class App implements OnInit {
     this.isLightTheme.set(next);
     document.documentElement.classList.toggle('light', next);
     localStorage.setItem(THEME_KEY, next ? 'light' : 'dark');
+    themeVersion.update(v => v + 1);
+  }
+
+  onModeChange(mode: 'user' | 'repo'): void {
+    this.searchMode.set(mode);
+    this.selected.set(null);
   }
 
   onSearch(event: { query: string; mode: 'user' | 'repo' }): void {
     this.lastQuery.set(event.query);
+    this.selected.set(null);
     this.router.navigate([], {
       queryParams: { q: event.query, type: event.mode },
       queryParamsHandling: 'merge'
@@ -71,11 +84,7 @@ export class App implements OnInit {
 
   onSelectResult(identifier: string): void {
     this.currentQuery.set(identifier);
-    this.mode.set(this.searchMode() === 'user' ? 'user' : 'repo');
-  }
-
-  backToResults(): void {
-    this.mode.set('results');
+    this.selected.set({ type: this.searchMode(), query: identifier });
   }
 
   private runSearch(query: string, searchMode: 'user' | 'repo'): void {
@@ -91,12 +100,10 @@ export class App implements OnInit {
           next: results => {
             this.userResults.set(results);
             this.isSearching.set(false);
-            this.mode.set('results');
           },
           error: (err: Error) => {
             this.searchError.set(err.message);
             this.isSearching.set(false);
-            this.mode.set('results');
           }
         });
     } else {
@@ -107,12 +114,10 @@ export class App implements OnInit {
           next: results => {
             this.repoResults.set(results);
             this.isSearching.set(false);
-            this.mode.set('results');
           },
           error: (err: Error) => {
             this.searchError.set(err.message);
             this.isSearching.set(false);
-            this.mode.set('results');
           }
         });
     }
