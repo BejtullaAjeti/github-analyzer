@@ -87,6 +87,12 @@ export class App implements OnInit {
     this.selected.set({ type: this.searchMode(), query: identifier });
   }
 
+  onViewRepo(fullName: string): void {
+    this.currentQuery.set(fullName);
+    this.searchMode.set('repo');
+    this.selected.set({ type: 'repo', query: fullName });
+  }
+
   private runSearch(query: string, searchMode: 'user' | 'repo'): void {
     this.searchMode.set(searchMode);
     this.isSearching.set(true);

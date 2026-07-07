@@ -23,8 +23,8 @@ import { Component, Input } from '@angular/core';
   styles: [
     `
     .skeleton-block {
-      background: var(--color-border-muted);
-      border-radius: var(--radius-sm);
+      background: var(--color-canvas-subtle);
+      border-radius: var(--radius);
       animation: shimmer 1.4s ease-in-out infinite;
       flex: 1;
       height: 220px;

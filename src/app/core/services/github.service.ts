@@ -29,10 +29,12 @@ export class GithubService {
     );
   }
 
-  getRepos(username: string): Observable<ReposResponse> {
-    return this.http.get<ReposResponse>(`${this.apiUrl}/repos/${username}`).pipe(
-      catchError(this.handleError)
-    );
+  getRepos(username: string, offset?: number): Observable<ReposResponse> {
+    return this.http
+      .get<ReposResponse>(`${this.apiUrl}/repos/${username}`, {
+        params: offset !== undefined ? { offset } : undefined
+      })
+      .pipe(catchError(this.handleError));
   }
 
   getActivity(username: string): Observable<ActivityPoint[]> {

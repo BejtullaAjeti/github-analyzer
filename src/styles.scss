@@ -1,6 +1,7 @@
 :root {
   --color-canvas-default: #0d1117;
   --color-canvas-subtle: #161b22;
+  --color-canvas-emphasis: #0a0d13;
   --color-canvas-inset: #010409;
   --color-border-default: #30363d;
   --color-border-muted: #21262d;
@@ -8,11 +9,23 @@
   --color-fg-muted: #8b949e;
   --color-fg-subtle: #6e7781;
   --color-accent-fg: #58a6ff;
-  --color-accent-emphasis: #1f6feb;
+  --color-accent-emphasis: #2057b6;
   --color-success-fg: #3fb950;
   --color-attention-fg: #d29922;
   --color-danger-fg: #f85149;
-  --color-done-fg: #a371f7;
+
+  /* Stat-grid cell background: a step lighter than canvas-emphasis/inset so
+     cells read as contained tiles, not punched-out holes. */
+  --color-cell-bg: #12161d;
+
+  /* Neutral filled state for the active tab / primary button -- grayscale,
+     no hue in either theme. Reuses --color-border-default's value directly
+     so the filled state sits at the same weight as the rest of the dark
+     palette's structural grey, rather than standing out as its own shade.
+     Text is light since the fill itself is dark. */
+  --color-neutral-fill: #30363d;
+  --color-neutral-fill-hover: #3d444d;
+  --color-neutral-fill-text: #e6edf3;
 
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --font-mono: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
@@ -33,13 +46,21 @@
   --text-lg: 22px;
   --text-xl: 30px;
 
+  /* Tight radius for small fixed-size elements (avatars, dots) that would look
+     circular rather than "softened" at the main radius. */
   --radius-sm: 2px;
+  /* Default radius for panes, cards, buttons, inputs, tab pills. */
+  --radius: 10px;
+
+  --transition-fast: 100ms ease;
 }
 
 html.light {
   --color-canvas-default: #ffffff;
   --color-canvas-subtle: #f6f8fa;
+  --color-canvas-emphasis: #f6f8fa;
   --color-canvas-inset: #f6f8fa;
+  --color-cell-bg: #eceff2;
   --color-border-default: #d0d7de;
   --color-border-muted: #d8dee4;
   --color-fg-default: #1f2328;
@@ -50,7 +71,12 @@ html.light {
   --color-success-fg: #1a7f37;
   --color-attention-fg: #9a6700;
   --color-danger-fg: #cf222e;
-  --color-done-fg: #8250df;
+
+  /* Neutral fill kept at its original near-white value -- this theme was
+     already confirmed correct, unlike dark mode's. */
+  --color-neutral-fill: #e6e6e6;
+  --color-neutral-fill-hover: #f2f2f2;
+  --color-neutral-fill-text: #1c1c1c;
 }
 
 *,
@@ -83,11 +109,18 @@ a {
   }
 }
 
-/* Shared "pane" motif: hairline-bordered panel with a mono title bar,
-   replacing the rounded-card idiom everywhere a content block appears. */
+:focus-visible {
+  outline: 2px solid var(--color-accent-fg);
+  outline-offset: 2px;
+}
+
+/* Shared "pane" motif: separated from the page by background tone
+   (canvas-subtle vs canvas-default) rather than a border, with a mono
+   title bar one tone deeper still (canvas-emphasis). No hairlines. */
 .pane {
   background-color: var(--color-canvas-subtle);
-  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius);
+  overflow: hidden;
 }
 
 .pane-title {
@@ -95,9 +128,8 @@ a {
   align-items: center;
   justify-content: space-between;
   gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  background-color: var(--color-canvas-inset);
-  border-bottom: 1px solid var(--color-border-default);
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-canvas-emphasis);
   font-family: var(--font-mono);
   font-size: var(--text-xs);
   font-weight: 600;
@@ -113,5 +145,30 @@ a {
 }
 
 .pane-body {
-  padding: var(--space-3);
+  padding: var(--space-4);
+}
+
+/* Custom scrollbar, applied globally so every independently-scrolling area
+   (rail results, main pane, etc.) picks it up without a per-component rule. */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border-default) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--color-border-default);
+  border-radius: 4px;
+
+  &:hover {
+    background-color: var(--color-fg-subtle);
+  }
 }

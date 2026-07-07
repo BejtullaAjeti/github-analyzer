@@ -1,6 +1,8 @@
-import { Component, computed, input } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, Output, effect, inject, input, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
-import { ReposResponse } from '../../shared/models/github.models';
+import { GithubService } from '../../core/services/github.service';
+import { ReposResponse, Repository } from '../../shared/models/github.models';
 import { languageColor } from '../../shared/language-colors';
 
 @Component({
@@ -11,15 +13,27 @@ import { languageColor } from '../../shared/language-colors';
     <div class="pane">
       <div class="pane-title">
         <span>Repositories</span>
-        <span class="pane-title-meta">{{ topRepos().length }}</span>
+        <span class="pane-title-meta">{{ repos().length }}</span>
       </div>
       <div class="pane-body">
-        @if (topRepos().length === 0) {
+        @if (repos().length === 0) {
           <p class="empty-state">No repositories found</p>
         } @else {
-          @for (repo of topRepos(); track repo.html_url) {
+          @for (repo of repos(); track repo.html_url) {
             <div class="repo-item">
-              <a class="repo-name" [href]="repo.html_url" target="_blank" rel="noopener noreferrer">{{ repo.name }}</a>
+              <div class="repo-name-row">
+                <button type="button" class="repo-name" (click)="onViewRepo(repo)">{{ repo.name }}</button>
+                <a
+                  class="external-link-btn"
+                  [href]="repo.html_url"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  [attr.aria-label]="'Open ' + repo.name + ' on GitHub'"
+                  (click)="$event.stopPropagation()"
+                >
+                  <svg viewBox="0 0 16 16" width="12" height="12" fill="currentColor"><path d="M10.604 1h4.146a.25.25 0 0 1 .25.25v4.146a.25.25 0 0 1-.427.177L13.03 4.03 9.28 7.78a.75.75 0 0 1-1.06-1.06l3.75-3.75-1.543-1.543A.25.25 0 0 1 10.604 1ZM3.75 2A1.75 1.75 0 0 0 2 3.75v8.5c0 .966.784 1.75 1.75 1.75h8.5A1.75 1.75 0 0 0 14 12.25v-3.5a.75.75 0 0 0-1.5 0v3.5a.25.25 0 0 1-.25.25h-8.5a.25.25 0 0 1-.25-.25v-8.5a.25.25 0 0 1 .25-.25h3.5a.75.75 0 0 0 0-1.5h-3.5Z"/></svg>
+                </a>
+              </div>
 
               @if (repo.description) {
                 <p class="repo-description">{{ repo.description }}</p>
@@ -43,6 +57,12 @@ import { languageColor } from '../../shared/language-colors';
               </div>
             </div>
           }
+
+          @if (hasMore()) {
+            <button type="button" class="load-more-btn" [disabled]="loadingMore()" (click)="loadMore()">
+              {{ loadingMore() ? 'Loading...' : 'Load More' }}
+            </button>
+          }
         }
       </div>
     </div>
@@ -50,9 +70,61 @@ import { languageColor } from '../../shared/language-colors';
   styleUrl: './repos-list.component.scss'
 })
 export class ReposListComponent {
-  readonly reposData = input.required<ReposResponse>();
+  private readonly githubService = inject(GithubService);
+  private readonly destroyRef = inject(DestroyRef);
 
-  readonly topRepos = computed(() => this.reposData().top_repos ?? []);
+  readonly reposData = input.required<ReposResponse>();
+  readonly username = input.required<string>();
+
+  @Output() viewRepo = new EventEmitter<string>();
+
+  readonly repos = signal<Repository[]>([]);
+  readonly hasMore = signal(false);
+  readonly offset = signal(0);
+  readonly loadingMore = signal(false);
 
   readonly languageColor = languageColor;
+
+  constructor() {
+    effect(() => {
+      const data = this.reposData();
+      this.repos.set(data.top_repos ?? []);
+      this.hasMore.set(data.has_more ?? false);
+      this.offset.set(data.offset ?? data.top_repos?.length ?? 0);
+      this.loadingMore.set(false);
+    });
+  }
+
+  loadMore(): void {
+    if (this.loadingMore() || !this.hasMore()) {
+      return;
+    }
+    this.loadingMore.set(true);
+    this.githubService
+      .getRepos(this.username(), this.offset())
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe({
+        next: response => {
+          this.repos.update(current => [...current, ...(response.top_repos ?? [])]);
+          this.hasMore.set(response.has_more ?? false);
+          this.offset.set(response.offset ?? this.repos().length);
+          this.loadingMore.set(false);
+        },
+        error: () => {
+          this.loadingMore.set(false);
+        }
+      });
+  }
+
+  onViewRepo(repo: Repository): void {
+    this.viewRepo.emit(this.repoFullName(repo));
+  }
+
+  private repoFullName(repo: Repository): string {
+    try {
+      return new URL(repo.html_url).pathname.replace(/^\//, '');
+    } catch {
+      return `${this.username()}/${repo.name}`;
+    }
+  }
 }

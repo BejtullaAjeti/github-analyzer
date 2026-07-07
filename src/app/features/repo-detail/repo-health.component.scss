@@ -1,16 +1,17 @@
 @use '../../shared/breakpoints' as *;
 
+/* Cells separate by tone (cell-bg against the pane's canvas-subtle
+   backdrop) instead of a hairline grid. */
 .health-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 1px;
-  background-color: var(--color-border-default);
-  border: 1px solid var(--color-border-default);
+  gap: var(--space-2);
 }
 
 .health-cell {
-  padding: var(--space-2) var(--space-3);
-  background-color: var(--color-canvas-subtle);
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-cell-bg);
+  border-radius: var(--radius);
 }
 
 .health-label {

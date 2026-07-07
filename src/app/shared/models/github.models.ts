@@ -26,6 +26,8 @@ export interface Repository {
 export interface ReposResponse {
   top_repos: Repository[];
   languages: Record<string, number>;
+  has_more: boolean;
+  offset: number;
 }
 
 export interface ActivityPoint {

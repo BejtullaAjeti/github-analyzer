@@ -1,4 +1,4 @@
-import { Component, DestroyRef, computed, effect, inject, input, signal } from '@angular/core';
+import { Component, DestroyRef, EventEmitter, Output, computed, effect, inject, input, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { forkJoin } from 'rxjs';
 
@@ -34,7 +34,7 @@ import { ErrorMessageComponent } from '../../shared/components/error-message.com
     @if (hasResults()) {
       <div class="analyzer-stack">
         <app-profile-card [user]="profile()!" />
-        <app-repos-list [reposData]="repos()!" />
+        <app-repos-list [reposData]="repos()!" [username]="query()" (viewRepo)="viewRepo.emit($event)" />
         <div class="chart-row">
           <app-language-chart [languages]="repos()!.languages" [valueLabel]="'repos'" />
           <app-activity-chart [activity]="activity()" />
@@ -49,6 +49,8 @@ export class AnalyzerComponent {
   private readonly destroyRef = inject(DestroyRef);
 
   readonly query = input.required<string>();
+
+  @Output() viewRepo = new EventEmitter<string>();
 
   readonly isLoading = signal(false);
   readonly error = signal<string | null>(null);

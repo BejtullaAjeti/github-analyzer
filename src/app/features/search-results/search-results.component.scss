@@ -1,6 +1,21 @@
 .results-pane {
-  border: none;
   border-radius: 0;
+  /* The shared .pane rule sets overflow: hidden (for radius-clipping on other
+     panes). That makes this pane -- the direct parent of .pane-title -- the
+     nearest ancestor with non-visible overflow, so position: sticky on the
+     title was resolving against this auto-height box (which never scrolls)
+     instead of .rail-results (the actual overflow-y: auto container two
+     levels up). No radius to clip here anyway, so overflow: visible is safe. */
+  overflow: visible;
+}
+
+/* Scoped to this pane only -- the rail's results list scrolls independently
+   (.rail-results, in app.scss) while the other pane-titles elsewhere don't
+   need this, since main-pane's charts/health/etc. don't scroll individually. */
+.results-pane .pane-title {
+  position: sticky;
+  top: 0;
+  z-index: 1;
 }
 
 .pane-body {
@@ -11,26 +26,29 @@
   color: var(--color-fg-muted);
   font-family: var(--font-mono);
   font-size: var(--text-xs);
-  padding: var(--space-3);
+  padding: var(--space-4);
 }
 
+/* Rows separate by spacing + hover/active tone, not a line on every row --
+   the list is short (search results, capped) and each row already has
+   strong internal contrast (avatar + mono name), so a divider per row
+   would just be extra noise. */
 .result-row {
   position: relative;
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3) var(--space-2) calc(var(--space-3) + 14px);
-  border-bottom: 1px solid var(--color-border-muted);
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4) var(--space-3) calc(var(--space-4) + 14px);
   border-left: 2px solid transparent;
   cursor: pointer;
-  transition: background-color 100ms, border-color 100ms;
+  transition: background-color var(--transition-fast), border-color var(--transition-fast);
 
   &:hover {
-    background-color: var(--color-border-muted);
+    background-color: var(--color-canvas-emphasis);
   }
 
   &.active {
-    background-color: var(--color-canvas-inset);
+    background-color: var(--color-canvas-emphasis);
     border-left-color: var(--color-accent-fg);
 
     &::before {

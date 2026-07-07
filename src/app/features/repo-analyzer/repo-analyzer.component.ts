@@ -70,7 +70,18 @@ import { ErrorMessageComponent } from '../../shared/components/error-message.com
 
       <div class="repo-content">
         <app-repo-health class="full-width" [health]="repoHealth()!" />
-        <app-commit-frequency-chart class="full-width" [data]="commitFrequency()" />
+
+        @if (commitFrequencyLoading()) {
+          <div class="pane full-width">
+            <div class="pane-title"><span>Commit Frequency</span></div>
+            <div class="pane-body">
+              <app-skeleton-loader mode="repo" />
+            </div>
+          </div>
+        } @else {
+          <app-commit-frequency-chart class="full-width" [data]="commitFrequency()" />
+        }
+
         <app-language-chart [languages]="languages()" [valueLabel]="'bytes'" />
         <app-contributors [contributors]="contributors()" />
       </div>
@@ -90,6 +101,7 @@ export class RepoAnalyzerComponent implements OnChanges {
   readonly repoHealth = signal<RepoHealth | null>(null);
   readonly languages = signal<RepoLanguages>({});
   readonly commitFrequency = signal<CommitFrequencyPoint[] | 'computing'>([]);
+  readonly commitFrequencyLoading = signal(true);
   readonly contributors = signal<ContributorSummary[]>([]);
 
   readonly hasResults = computed(() => this.repoDetail() !== null);
@@ -108,6 +120,7 @@ export class RepoAnalyzerComponent implements OnChanges {
     this.repoHealth.set(null);
     this.languages.set({});
     this.commitFrequency.set([]);
+    this.commitFrequencyLoading.set(true);
     this.contributors.set([]);
 
     forkJoin({
@@ -124,19 +137,28 @@ export class RepoAnalyzerComponent implements OnChanges {
           this.languages.set(languages);
           this.contributors.set(contributors);
           this.isLoading.set(false);
+
+          // Fetched only after the main panes have data and have rendered --
+          // keeps the chart's canvas from mounting while layout is still
+          // settling, which was causing Chart.js to measure a 0-size canvas.
+          this.githubService
+            .getCommitFrequency(owner, repo)
+            .pipe(takeUntilDestroyed(this.destroyRef))
+            .subscribe({
+              next: result => {
+                this.commitFrequency.set(result);
+                this.commitFrequencyLoading.set(false);
+              },
+              error: () => {
+                this.commitFrequency.set([]);
+                this.commitFrequencyLoading.set(false);
+              }
+            });
         },
         error: (err: Error) => {
           this.error.set(err.message);
           this.isLoading.set(false);
         }
-      });
-
-    this.githubService
-      .getCommitFrequency(owner, repo)
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe({
-        next: result => this.commitFrequency.set(result),
-        error: () => this.commitFrequency.set([])
       });
   }
 }

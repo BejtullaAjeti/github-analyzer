@@ -126,7 +126,7 @@ export class LanguageChartComponent implements AfterViewInit, OnChanges, OnDestr
           },
           tooltip: {
             backgroundColor: cssVar('--color-canvas-inset'),
-            borderColor: cssVar('--color-border-default'),
+            borderColor: cssVar('--color-border-muted'),
             borderWidth: 1,
             titleColor: cssVar('--color-fg-default'),
             bodyColor: cssVar('--color-fg-muted'),

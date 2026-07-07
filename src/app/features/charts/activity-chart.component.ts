@@ -131,7 +131,7 @@ export class ActivityChartComponent implements AfterViewInit, OnChanges, OnDestr
           legend: { display: false },
           tooltip: {
             backgroundColor: cssVar('--color-canvas-inset'),
-            borderColor: cssVar('--color-border-default'),
+            borderColor: cssVar('--color-border-muted'),
             borderWidth: 1,
             titleColor: cssVar('--color-fg-default'),
             bodyColor: mutedColor

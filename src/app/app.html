@@ -24,7 +24,7 @@
   <main class="main-pane">
     @if (selected(); as sel) {
       @if (sel.type === 'user') {
-        <app-analyzer [query]="sel.query" />
+        <app-analyzer [query]="sel.query" (viewRepo)="onViewRepo($event)" />
       } @else {
         <app-repo-analyzer [repoQuery]="sel.query" />
       }

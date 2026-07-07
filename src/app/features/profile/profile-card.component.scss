@@ -1,5 +1,5 @@
 .profile-pane {
-  padding: var(--space-3);
+  padding: var(--space-5);
 }
 
 .profile-main {
@@ -12,7 +12,7 @@
   width: 56px;
   height: 56px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--color-border-default);
+  border: 1px solid var(--color-border-muted);
   flex-shrink: 0;
 }
 
@@ -22,7 +22,8 @@
 
 .profile-name {
   display: block;
-  font-size: var(--text-md);
+  font-family: var(--font-mono);
+  font-size: var(--text-lg);
   font-weight: 600;
   color: var(--color-fg-default);
   text-decoration: none;
@@ -57,7 +58,7 @@
 
 .hero-count {
   font-family: var(--font-mono);
-  font-size: var(--text-lg);
+  font-size: var(--text-xl);
   font-weight: 700;
   color: var(--color-fg-default);
   line-height: 1;
@@ -85,17 +86,15 @@
 
 .profile-bio {
   font-size: var(--text-sm);
-  margin: var(--space-3) 0 0;
+  margin: var(--space-4) 0 0;
   line-height: 1.5;
 }
 
 .profile-meta-row {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-1) var(--space-4);
-  margin-top: var(--space-3);
-  padding-top: var(--space-2);
-  border-top: 1px solid var(--color-border-muted);
+  gap: var(--space-2) var(--space-4);
+  margin-top: var(--space-4);
 }
 
 .meta-item {

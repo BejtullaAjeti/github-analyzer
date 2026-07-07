@@ -4,24 +4,79 @@
   font-size: var(--text-sm);
 }
 
+/* Spacing alone separates items -- no divider line per row. */
 .repo-item {
-  padding: var(--space-2) 0;
-  border-bottom: 1px solid var(--color-border-muted);
+  padding: var(--space-3) 0;
+
+  &:first-child {
+    padding-top: 0;
+  }
 
   &:last-child {
-    border-bottom: none;
+    padding-bottom: 0;
   }
 }
 
+.repo-name-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
 .repo-name {
+  padding: 0;
+  background: none;
+  border: none;
   font-family: var(--font-mono);
   font-size: var(--text-base);
   font-weight: 600;
   color: var(--color-accent-fg);
   text-decoration: none;
+  cursor: pointer;
 
   &:hover {
     text-decoration: underline;
+  }
+}
+
+.external-link-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-1);
+  border-radius: var(--radius-sm);
+  color: var(--color-fg-muted);
+  flex-shrink: 0;
+  transition: color var(--transition-fast), background-color var(--transition-fast);
+
+  &:hover {
+    color: var(--color-accent-fg);
+    background-color: var(--color-canvas-emphasis);
+  }
+}
+
+.load-more-btn {
+  width: 100%;
+  margin-top: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  background-color: var(--color-canvas-emphasis);
+  color: var(--color-fg-muted);
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+
+  &:hover:not(:disabled) {
+    color: var(--color-fg-default);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: default;
   }
 }
 
